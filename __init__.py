@@ -1,10 +1,10 @@
-from modules import cbpi
-from modules.core.controller import FermenterController
-from modules.core.props import Property
+from modules.core.core import cbpi
+from modules.core.basetypes import FermenterController
+from modules.core.proptypes import Property
 import datetime
 
-@cbpi.fermentation_controller
-class PIDFermentationChamber(FermenterController):
+@cbpi.addon.fermenter.controller()
+class FermChamberTargetTempPID(FermenterController):
 
     @staticmethod
     def chart(fermenter):
@@ -55,23 +55,9 @@ class PIDFermentationChamber(FermenterController):
 
             self.sleep(5)
 
-    @cbpi.try_catch(None)
     def get_chamber_temp(self):
         return self.get_sensor_value(int(self.get_fermenter().sensor2))
 
-    @cbpi.try_catch(None)
-    def cooler_on(self):
-        f = self.get_fermenter()
-        if f.cooler is not None:
-            self.actor_on(id=int(f.cooler))
-
-    @cbpi.try_catch(None)
-    def cooler_off(self):
-        f = self.get_fermenter()
-        if f.cooler is not None:
-            self.actor_off(int(f.cooler))
-
-    @cbpi.try_catch(None)
     def get_fermenter(self):
         return self.api.cache.get("fermenter").get(self.fermenter_id)
 
